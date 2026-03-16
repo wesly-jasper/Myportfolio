@@ -43,7 +43,9 @@ const HeroSection = () => {
               <ArrowDown size={18} /> Resume
             </a>
             <a
-              href="#"
+              href="https://github.com/wesly-jasper"
+              target="_blank"
+              rel="noreferrer"
               className="px-8 py-4 bg-secondary text-secondary-foreground border border-border font-semibold rounded-xl hover:bg-muted transition-all flex items-center gap-2"
             >
               <Github size={18} /> GitHub

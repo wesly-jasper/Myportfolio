@@ -7,22 +7,22 @@ const contactLinks = [
   {
     icon: <Mail size={24} />,
     label: "Email",
-    value: "wesly.jasper@dev.com",
-    href: "mailto:wesly.jasper@dev.com",
+    value: "weslyjasper7@gmail.com",
+    href: "mailto:weslyjasper7@gmail.com",
     color: "bg-primary/10 text-primary",
   },
   {
     icon: <Github size={24} />,
     label: "GitHub",
-    value: "github.com/weslyjasper",
-    href: "#",
+    value: "github.com/wesly-jasper",
+    href: "https://github.com/wesly-jasper",
     color: "bg-secondary text-secondary-foreground",
   },
   {
     icon: <Linkedin size={24} />,
     label: "LinkedIn",
-    value: "linkedin.com/in/weslyjasper",
-    href: "#",
+    value: "linkedin.com/in/wesly-jasper",
+    href: "https://www.linkedin.com/in/wesly-jasper/",
     color: "bg-primary/10 text-primary",
   },
 ];
