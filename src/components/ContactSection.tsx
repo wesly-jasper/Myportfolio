@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, Github, Linkedin } from "lucide-react";
 import { toast } from "sonner";
@@ -31,37 +31,25 @@ const contactLinks = [
 
 const ContactSection = () => {
   const [sending, setSending] = useState(false);
+  const [returnUrl, setReturnUrl] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const formData = new FormData(form);
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const contactStatus = url.searchParams.get("contact");
 
-    setSending(true);
-
-    try {
-      const response = await fetch(`https://formsubmit.co/ajax/${recipientEmail}`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-        },
-        body: formData,
-      });
-
-      const result = (await response.json()) as { success?: string; message?: string };
-
-      if (!response.ok) {
-        throw new Error(result.message || "Unable to send message right now.");
-      }
-
-      form.reset();
+    if (contactStatus === "success") {
       toast.success("Message sent to my inbox.");
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Unable to send message right now.";
-      toast.error(message);
-    } finally {
-      setSending(false);
+      url.searchParams.delete("contact");
+      window.history.replaceState({}, "", url.toString());
     }
+
+    url.searchParams.set("contact", "success");
+    url.hash = "contact";
+    setReturnUrl(url.toString());
+  }, []);
+
+  const handleSubmit = () => {
+    setSending(true);
   };
 
   return (
@@ -105,9 +93,12 @@ const ContactSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
+            action={`https://formsubmit.co/${recipientEmail}`}
+            method="POST"
             onSubmit={handleSubmit}
             className="space-y-4 p-8 bg-card/50 rounded-[2rem] border border-border"
           >
+            <input type="hidden" name="_next" value={returnUrl} />
             <input type="hidden" name="_subject" value="New portfolio contact form message" />
             <input type="hidden" name="_captcha" value="false" />
             <input type="text" name="_honey" className="hidden" tabIndex={-1} autoComplete="off" />
