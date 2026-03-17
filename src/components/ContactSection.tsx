@@ -3,12 +3,14 @@ import { motion } from "framer-motion";
 import { Mail, Github, Linkedin } from "lucide-react";
 import { toast } from "sonner";
 
+const recipientEmail = "weslyjasper7@gmail.com";
+
 const contactLinks = [
   {
     icon: <Mail size={24} />,
     label: "Email",
-    value: "weslyjasper7@gmail.com",
-    href: "mailto:weslyjasper7@gmail.com",
+    value: recipientEmail,
+    href: `mailto:${recipientEmail}`,
     color: "bg-primary/10 text-primary",
   },
   {
@@ -30,14 +32,36 @@ const contactLinks = [
 const ContactSection = () => {
   const [sending, setSending] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
     setSending(true);
-    setTimeout(() => {
+
+    try {
+      const response = await fetch(`https://formsubmit.co/ajax/${recipientEmail}`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+        },
+        body: formData,
+      });
+
+      const result = (await response.json()) as { success?: string; message?: string };
+
+      if (!response.ok) {
+        throw new Error(result.message || "Unable to send message right now.");
+      }
+
+      form.reset();
+      toast.success("Message sent to my inbox.");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unable to send message right now.";
+      toast.error(message);
+    } finally {
       setSending(false);
-      toast.success("Message sent! I'll get back to you soon.");
-      (e.target as HTMLFormElement).reset();
-    }, 1500);
+    }
   };
 
   return (
@@ -84,21 +108,27 @@ const ContactSection = () => {
             onSubmit={handleSubmit}
             className="space-y-4 p-8 bg-card/50 rounded-[2rem] border border-border"
           >
+            <input type="hidden" name="_subject" value="New portfolio contact form message" />
+            <input type="hidden" name="_captcha" value="false" />
+            <input type="text" name="_honey" className="hidden" tabIndex={-1} autoComplete="off" />
             <div className="grid md:grid-cols-2 gap-4">
               <input
                 type="text"
+                name="name"
                 placeholder="Name"
                 required
                 className="w-full bg-secondary border-none rounded-xl p-4 text-secondary-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary outline-none"
               />
               <input
                 type="email"
+                name="email"
                 placeholder="Email"
                 required
                 className="w-full bg-secondary border-none rounded-xl p-4 text-secondary-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary outline-none"
               />
             </div>
             <textarea
+              name="message"
               placeholder="Message"
               rows={4}
               required
